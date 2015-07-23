@@ -1,0 +1,178 @@
+@startuml
+
+title LuaPlantUML module hierarchy
+
+start
+partition luaplantuml_script {
+if (found plantuml.jar?) then (yes)
+	:check all arguments;
+	:search for all .lua files;
+else (no)
+	stop
+endif
+}	
+
+partition init {
+:start process;
+note left
+	require luametrics
+end note
+while (parse global or function comments)
+
+
+if () then (global)
+	:create paths_to_diagram keys with name "global";
+else (function)
+	:create paths_to_diagram keys with function name;
+endif
+endwhile
+
+if (argument -w?) then (yes)
+	:create wsd file;
+	note left
+		"name of file".wsd - contains all parsed
+		comments with PlantUML syntax
+	end note
+else (no)
+endif
+}
+
+partition generate_uml {
+:generate folders for diagrams;
+while (search in parsed PlantUML comments)
+:parse comment by comment to get one full PlantUML string;
+:check arguments;
+
+note left
+	if format was typed,
+	then set this format for all diagrams
+end note
+
+:check inner comment {};
+note left
+	these comments has higher priority
+	than arguments, for example it will
+	replace format in argument
+end note
+
+:add arguments for file types to plantuml.jar path;
+:create temporary file with parsed or generated name;
+
+:store these informations in table paths_to_diagram;
+
+:generate final diagram image;
+
+endwhile
+
+}
+stop
+
+legend
+paths_to_diagram is table where we store all relevant informations
+paths_to_diagram[position].name 		name of function or "global"
+paths_to_diagram[position].path 		path to generated image of diagram
+paths_to_diagram[position].uml_string 	PlantUML syntax string
+
+this module requires lfs, metrics, getopt, socket.http, mime
+
+endlegend
+
+@enduml
+
+
+------------------------------------------------------------process_text--------------------------------------------------------------------------------
+
+@startuml
+box "Internal Service" #LightBlue
+participant process_text #99FF99
+end box 
+box "Internal Service" #LightRed
+participant luaplantuml.generate_prepare
+end box
+->process_text:file, settings
+metrics.processText <- process_text:file
+metrics.processText -> metrics.processText:create AST
+metrics.processText -> process_text:ast_of_file
+
+process_text -> parse_util:ast_of_file,0
+parse_util -> parse_util:parse and concat\nPlantUML syntax strings
+parse_util -> process_text:final_syntax
+process_text -> process_text:parsed=final_syntax
+
+process_text -> luaplantuml.generate_prepare:parsed, paths_to_diagram, settings
+@enduml
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+@startuml
+Participant process #99FF99 
+->process:comment, paths_to_diagram, settings
+
+process -> process:set to position of PlantUML\nsyntax block 
+process -> get_uml_string:comment, start/end_position
+get_uml_string -> process:uml_string
+process -> generate_uml:uml_string, paths_to_diagram, settings
+...generate process...
+generate_uml -> generate_uml:parse nested comment in {}
+generate_uml -> generate_uml:check formats
+generate_uml -> generate_uml:create temporary files
+generate_uml -> generate_uml:fill paths_to_diagram
+generate_uml -> generate_uml:GENERATE diagram
+@enduml
+
+
+
+
+
+
+
+
+
+
+
+
+
+ @startuml
+ participant process_text #99FF99 
+ ->process_text:file, settings
+ metrics.processText <- process_text:file
+ metrics.processText -> metrics.processText:create AST
+ metrics.processText -> process_text:ast_of_file
+
+ process_text -> parse_util:ast_of_file,0
+ parse_util -> parse_util:parse and concat\nPlantUML syntax strings
+ parse_util -> process_text:final_syntax
+ process_text -> process_text:parsed=final_syntax
+
+ process_text -> luaplantuml.generate_prepare:parsed, paths_to_diagram, settings
+ @enduml
+--% Function create .wsd file with PlantUML syntaxes to specific source file.
+--% The name of file is same as source and creates it in the same directory.
+--@ file (string) read source file.
+--@ settings (table) arguments for PlantUML and generate process.
+--: (table, nil) Return full table with function name(.name), path to that function diagram(.path), and its PlantUML syntax string(.uml_string).
+local function process_text(file, settings)
+
+
+
+
+
+
+
+
+
+
+
+@startuml
+Participant process #99FF99 
+->process:comment, paths_to_diagram, settings
+process -> process:set to position of PlantUML\nsyntax block 
+process -> get_uml_string:comment, start/end_position
+get_uml_string -> process:uml_string
+process -> generate_uml:uml_string, paths_to_diagram, settings
+generate_uml -> generate_uml:parse nested comment in {}
+generate_uml -> generate_uml:check formats
+generate_uml -> generate_uml:create temporary files
+generate_uml -> generate_uml:fill paths_to_diagram
+generate_uml -> generate_uml:GENERATE diagram
+@enduml

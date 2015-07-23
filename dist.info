@@ -1,0 +1,16 @@
+--- This dist file is part of LuaDist project
+name = "luaplantuml"
+version = "0.1"
+desc = "LuaPlantUML generates UML diagrams with plantuml.jar from comments"
+author = "Robert Karasek"
+maintainer = "Peter Kapec"
+license = "MIT"
+url = "https://github.com/LuaDist/luaplantuml"
+
+depends = {
+	"lua ~> 5.1",
+	"alt-getopt >= 0.7",
+	"luafilesystem >= 1.2.1",
+	"luametrics >= 0.2.1",
+	-- "plantuml.jar ",
+}
