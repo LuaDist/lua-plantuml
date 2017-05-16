@@ -46,6 +46,9 @@ local function generate_uml(uml_string, paths_to_diagram, settings)
 		
 	--_ set path for temporary files
 	local temp_file_path = os.tmpname()	--_ generate temporary file where we write one uml syntax string (e.g. "/tmp/lua_rDKO80")
+	local temp_file = string.sub(temp_file_path, 6)
+	temp_file_path = settings.dir_path .. "uml_files/" .. temp_file
+
 
 	--_ optional attributes in a "json" format comment
 	if string.sub(uml_string, 10,10) == "{" then
@@ -61,7 +64,7 @@ local function generate_uml(uml_string, paths_to_diagram, settings)
 		file_name = string.match(optional_comment, '.-"fileName"%s-:%s-"(.-)".-')
 
 		--_ check if the temporary file path is given
-		temp_file_path = string.match(optional_comment, '.-"tempfileName"%s-:%s-"(.-)".-') or temp_file_path
+		--temp_file_path = string.match(optional_comment, '.-"tempfileName"%s-:%s-"(.-)".-') or temp_file_path
 	end
 
 	--_ update PlantUML path for miscellaneous file formats	
@@ -88,8 +91,7 @@ local function generate_uml(uml_string, paths_to_diagram, settings)
 	if file_name then
 		final_path = final_path .. file_name	--_ name found in "json" comment, concat it to path
 	else
-		uml_filename_temp = string.gsub(temp_file_path, "\/tmp\/", "") --_ name NOT found so it is temporary name, need remove /tmp/	s
-		final_path = final_path .. string.format("%s.%s", uml_filename_temp, fileType)
+		final_path = final_path .. string.format("%s.%s", temp_file, fileType)
 	end
 
 	--_ set paths and uml syntax to diagrams for function names in table 'paths_to_diagram'
@@ -108,8 +110,10 @@ local function generate_uml(uml_string, paths_to_diagram, settings)
 		write_temp_file:write( uml_string ) 	--_ write the pure PlantUML syntax to a file
 		write_temp_file:close()
 
+
+
 		--_ this will generate image
-		os.execute( string.format(plantuml_path, temp_file_path ) )
+		os.execute( string.format("java -jar %s %s", plantuml_path, temp_file_path ) )
 
 		temp_path_save = string.format("%s.%s", temp_file_path, fileType)
 
