@@ -1,6 +1,6 @@
 --- This dist file is part of LuaDist project
 name = "lua-plantuml"
-version = "0.1"
+version = "0.2"
 desc = "LuaPlantUML generates UML diagrams with plantuml.jar from comments"
 author = "Robert Karasek"
 maintainer = "Peter Kapec"
